@@ -23,7 +23,8 @@ end
 
 lemma subset_refl : X ⊆ X :=
 begin
-  sorry,
+  intros a h,
+  exact h,
 end
 
 lemma subset_trans (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) : X ⊆ Z :=
@@ -36,7 +37,12 @@ begin
   -- You can also think of it as an implication:
   -- "if a is in Ω, and if a ∈ Y, then a ∈ Z". Because it's an implication,
   -- you can `apply hYZ`. This is a really useful skill!
-  sorry
+  intros a h,
+  have hY : a ∈ Y := 
+    begin 
+      exact hXY h,
+    end,
+  exact hYZ hY,
 end
 
 /-!
@@ -60,12 +66,16 @@ end
 lemma subset.antisymm (hXY : X ⊆ Y) (hYX : Y ⊆ X) : X = Y :=
 begin
   -- start with `ext a`,
-  sorry
+  ext a,
+  split,
+  { exact @hXY a },
+  { intro hY,
+    exact hYX hY },
 end
 
 /-!
 
-### Unions and intersections
+## Unions and intersections
 
 Type `\cup` or `\un` for `∪`, and `\cap` or `\i` for `∩`
 
@@ -91,34 +101,60 @@ end
 
 lemma union_self : X ∪ X = X :=
 begin
-  sorry
+  ext a,
+  split,
+  rotate,
+  { intro h, 
+    exact or.inl h },
+  { intro h, 
+    cases h, 
+    repeat {exact h} },
 end
 
 lemma subset_union_left : X ⊆ X ∪ Y :=
 begin
-  sorry
+  intros a h,
+  exact or.inl h,
 end
 
 lemma subset_union_right : Y ⊆ X ∪ Y :=
 begin
-  sorry
+  intros a h,
+  exact or.inr h,
 end
 
 lemma union_subset_iff : X ∪ Y ⊆ Z ↔ X ⊆ Z ∧ Y ⊆ Z :=
 begin
-  sorry
+  split,
+  { intro,  
+    split,
+    { apply subset_trans,
+      { exact subset_union_left _ X Y },
+      { assumption }},
+    { apply subset_trans,
+      { exact subset_union_right _ X Y },
+      { assumption }}},
+  { intros h a h',
+    cases h',
+    { exact h.left h' },
+    { exact h.right h' }},
 end
 
 variable (W : set Ω)
 
 lemma union_subset_union (hWX : W ⊆ X) (hYZ : Y ⊆ Z) : W ∪ Y ⊆ X ∪ Z :=
 begin
-  sorry
+  have h : W ⊆ X ∪ Z := sorry,
+  have h' : Y ⊆ X ∪ Z := sorry,
+  apply (union_subset_iff _ W Y (X ∪ Z)).mpr,
+  exact ⟨h,h'⟩ 
 end
+
+#check union_subset_union
 
 lemma union_subset_union_left (hXY : X ⊆ Y) : X ∪ Z ⊆ Y ∪ Z :=
 begin
-  sorry
+  exact union_subset_union _ _ _ Z _ hXY (subset_refl _ _)  
 end
 
 -- etc etc
@@ -139,7 +175,9 @@ end
 
 lemma inter_comm : X ∩ Y = Y ∩ X :=
 begin
-  sorry
+  ext a,
+  split,
+  repeat { exact λ h, ⟨h.right,h.left⟩ },
 end
 
 lemma inter_assoc : X ∩ (Y ∩ Z) = (X ∩ Y) ∩ Z :=
@@ -153,14 +191,34 @@ end
 
 -/
 
-lemma not_exists_iff_forall_not : ¬ (∃ a, a ∈ X) ↔ ∀ b, ¬ (b ∈ X) :=
+#check Exists
+
+variable (P : Ω → Prop)
+
+lemma not_exists_iff_forall_not : ¬ (∃ a, P a) ↔ ∀ b, ¬ (P b) :=
 begin
-  sorry,
+  split,
+  { intros h b n,
+    exact h (exists.intro _ n)},
+  { intros h n,
+    apply exists.elim n,
+    exact h},
 end
 
-example : ¬ (∀ a, a ∈ X) ↔ ∃ b, ¬ (b ∈ X) :=
+example : ¬ (∀ a, P a) ↔ ∃ b, ¬ (P b) :=
 begin
-  sorry,
+  split,
+  { intros h', 
+    by_contra,
+    apply (not_exists_iff_forall_not Ω (λ a, ¬ P a)).mpr,
+    intros b n,
+    exact h (exists.intro b n),
+    sorry,
+    },
+  { intros h n, 
+    cases h with a h',
+    exact h' (n a),
+    },
 end
 
 end xena

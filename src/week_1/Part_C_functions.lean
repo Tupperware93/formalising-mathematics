@@ -49,7 +49,8 @@ end
 /-- The identity function is injective -/
 lemma injective_id : injective (id : X → X) :=
 begin
-  sorry,
+  intros a b h,
+  exact h,
 end
 
 -- function composition g ∘ f is satisfies (g ∘ f) (x) = g(f(x)). This
@@ -66,7 +67,10 @@ lemma injective_comp (hf : injective f) (hg : injective g) : injective (g ∘ f)
 begin
   -- you could start with `rw injective_def at *` if you like.
   -- In some sense it doesn't do anything, but it might make you happier.
-  sorry,
+  intros a b h,
+  apply hf, 
+  apply hg,
+  exact h,
 end
 
 /-!
@@ -87,7 +91,9 @@ end
 lemma surjective_id : surjective (id : X → X) :=
 begin
   -- you can start with `rw surjective_def` if you like.
-  sorry,
+  intro b,
+  use b,
+  refl,
 end
 
 -- If you started with `rw surjective_def` -- try deleting it.
@@ -99,7 +105,12 @@ end
 /-- Composite of two surjective functions is surjective -/
 lemma surjective_comp (hf : surjective f) (hg : surjective g) : surjective (g ∘ f) :=
 begin
-  sorry,
+  intro c,
+  obtain ⟨b,h⟩ := hg c,
+  obtain ⟨a,h'⟩ := hf b,
+  use a, 
+  dsimp,
+  rwa [h'],
 end
 
 /-!
@@ -123,13 +134,17 @@ end
 /-- The identity function is bijective. -/
 lemma bijective_id : bijective (id : X → X) :=
 begin
-  sorry,
+  exact ⟨injective_id, surjective_id⟩,
 end
 
 /-- A composite of bijective functions is bijective. -/
 lemma bijective_comp (hf : bijective f) (hg : bijective g) : bijective (g ∘ f) :=
 begin
-  sorry,
+  refine ⟨injective_comp _ _, surjective_comp _ _⟩,
+  exact hf.left,
+  exact hg.left,
+  exact hf.right,
+  exact hg.right,
 end
 
 end xena
