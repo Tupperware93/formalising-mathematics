@@ -219,7 +219,7 @@ end
 
 @[simp] lemma mul_inv_cancel_left : a * (a⁻¹ * b) = b :=
 begin
-  sorry
+  sorry,
 end
 
 @[simp] lemma inv_mul : (a * b)⁻¹ = b⁻¹ * a⁻¹ :=
@@ -278,12 +278,14 @@ is one.
 
 lemma eq_mul_inv_of_mul_eq {a b c : G} (h : a * c = b) : a = b * c⁻¹ :=
 begin
-  sorry
+  replace h := congr_arg(λ g , g * c⁻¹) h,
+  simp at h,
+  exact h,
 end
 
 lemma eq_inv_mul_of_mul_eq {a b c : G} (h : b * a = c) : a = b⁻¹ * c :=
 begin
-  sorry
+  sorry,
 end
 
 lemma mul_left_eq_self {a b : G} : a * b = b ↔ a = 1 :=
@@ -308,7 +310,10 @@ end
 
 lemma unique_left_id {e : G} (h : ∀ x : G, e * x = x) : e = 1 :=
 begin
-  sorry
+  specialize h e,
+  apply mul_left_cancel e, 
+  simp,
+  exact h,
 end
 
 lemma unique_right_inv {a b : G} (h : a * b = 1) : b = a⁻¹ :=
