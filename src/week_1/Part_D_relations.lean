@@ -79,7 +79,10 @@ variables {α : Type} {P : partition α} {X Y : set α}
 theorem eq_of_mem (hX : X ∈ P.C) (hY : Y ∈ P.C) {a : α} (haX : a ∈ X)
   (haY : a ∈ Y) : X = Y :=
 -- Proof: follows immediately from the disjointness hypothesis.
-P.Hdisjoint _ hX _ hY ⟨a, haX, haY⟩
+begin
+sorry,
+end
+-- P.Hdisjoint _ _ hX hY ⟨a, haX, haY⟩
 
 /-- If a is in two blocks X and Y, and if b is in X,
   then b is in Y (as X=Y) -/
@@ -88,8 +91,7 @@ theorem mem_of_mem (hX : X ∈ P.C) (hY : Y ∈ P.C) {a b : α}
 begin
   -- you might want to start with `have hXY : X = Y`
   -- and prove it from the previous lemma
-  have hXY : X = Y := eq_of_mem hX hY haX haY,
-  rwa [←hXY],
+  sorry,
 end
 
 /-- Every term of type `α` is in one of the blocks for a partition `P`. -/
@@ -97,9 +99,7 @@ theorem mem_block (a : α) : ∃ X : set α, X ∈ P.C ∧ a ∈ X :=
 begin
   -- an interesting way to start is
   -- `obtain ⟨X, hX, haX⟩ := P.Hcover a,`
-  obtain ⟨X,hX,haX⟩ := P.Hcover a,
-  use X,
-  exact ⟨hX,haX⟩,
+  sorry,
 end
 
 end partition
@@ -155,7 +155,7 @@ begin
   -- You can extract the things with
   -- `rcases hR with ⟨hrefl, hsymm, htrans⟩,` or
   -- `obtain ⟨hrefl, hsymm, htrans⟩ := hR,`
-  exact hR.left a,
+  sorry,
 end
 
 lemma cl_sub_cl_of_mem_cl {a b : α} :
@@ -163,8 +163,7 @@ lemma cl_sub_cl_of_mem_cl {a b : α} :
   cl R a ⊆ cl R b :=
 begin
   -- remember `set.subset_def` says `X ⊆ Y ↔ ∀ a, a ∈ X → a ∈ Y
-  intros hab c hac,
-  apply hR.right.right hac hab,
+  sorry,
 end
 
 lemma cl_eq_cl_of_mem_cl {a b : α} :
@@ -172,15 +171,7 @@ lemma cl_eq_cl_of_mem_cl {a b : α} :
   cl R a = cl R b :=
 begin
   -- remember `set.subset.antisymm` says `X ⊆ Y → Y ⊆ X → X = Y`
-  intro h,
-  apply set.subset.antisymm,
-  apply cl_sub_cl_of_mem_cl,
-  exact hR,
-  exact h,
-  have h' : b ∈ cl R a,
-  rw mem_cl_iff at *,
-  exact hR.right.left h,
-  exact cl_sub_cl_of_mem_cl hR h',
+  sorry
 end
 
 end equivalence_classes -- section
@@ -200,7 +191,6 @@ and proving that the constructions are two-sided inverses of one another.
 
 open partition
 
-#check equiv
 
 example (α : Type) : {R : α → α → Prop // equivalence R} ≃ partition α :=
 -- We define constructions (functions!) in both directions and prove that
@@ -218,42 +208,20 @@ example (α : Type) : {R : α → α → Prop // equivalence R} ≃ partition α
       cases R with R hR,
       -- If X is an equivalence class then X is nonempty.
       show ∀ (X : set α), (∃ (a : α), X = cl R a) → X.nonempty,
-      intros X h,
-      obtain ⟨a,h'⟩ := h,
-      rw h',
-      exact ⟨a,mem_cl_self hR a⟩,
+      sorry,
     end,
     Hcover := begin
       cases R with R hR,
       -- The equivalence classes cover α
       show ∀ (a : α), ∃ (X : set α) (H : ∃ (b : α), X = cl R b), a ∈ X,
-      intros a,
-      use cl R a,
-      split, 
-      simp,
-      exact mem_cl_self hR a,
+      sorry,
     end,
     Hdisjoint := begin
-      cases R with R hR,
-      dsimp,
-      -- If two equivalence classes overlap, they are equal.
-      /- show ∀ (X Y : set α), (∃ (a : α), X = cl R a) → -/
-        /- (∃ (b : α), Y = cl _ b) → (X ∩ Y).nonempty → X = Y, -/
-      intros X hX Y hY h,
-      obtain ⟨a,haX⟩ := hX,
-      obtain ⟨b,hbY⟩ := hY,
-      obtain ⟨c,h⟩ := h,
-      rw [haX,hbY] at *,
-      clear haX hbY X Y,
-      have hca : cl R a = cl R c,
-      apply eq.symm,
-      apply cl_eq_cl_of_mem_cl hR,
-      exact h.left,
-      have hcb : cl R b = cl R c,
-      apply eq.symm,
-      apply cl_eq_cl_of_mem_cl hR,
-      exact h.right,
-      rw [hca,hcb],
+      -- cases R with R hR,
+      -- -- If two equivalence classes overlap, they are equal.
+      -- show ∀ (X Y : set α), (∃ (a : α), X = cl R a) →
+      --   (∃ (b : α), Y = cl _ b) → (X ∩ Y).nonempty → X = Y,
+      sorry,
     end },
   -- Conversely, say P is an partition. 
   inv_fun := λ P, 
@@ -267,24 +235,14 @@ example (α : Type) : {R : α → α → Prop // equivalence R} ≃ partition α
     { -- It's reflexive
       show ∀ (a : α)
         (X : set α), X ∈ P.C → a ∈ X → a ∈ X,
-      intros _ _ _ ha,
-      exact ha,
+      sorry,
     },
     split,
     { -- it's symmetric
       show ∀ (a b : α),
         (∀ (X : set α), X ∈ P.C → a ∈ X → b ∈ X) →
          ∀ (X : set α), X ∈ P.C → b ∈ X → a ∈ X,
-      intros a b h Y hY hbY,
-      obtain ⟨X,H,haX⟩ := P.Hcover a,
-      have hbX : b ∈ X := h X H haX,
-      have hXY : X = Y,
-      apply P.Hdisjoint, 
-      exact H,
-      exact hY,
-      use b,
-      exact ⟨hbX,hbY⟩,
-      rwa ←hXY,
+      sorry,
     },
     { -- it's transitive
       unfold transitive,
@@ -292,10 +250,7 @@ example (α : Type) : {R : α → α → Prop // equivalence R} ≃ partition α
         (∀ (X : set α), X ∈ P.C → a ∈ X → b ∈ X) →
         (∀ (X : set α), X ∈ P.C → b ∈ X → c ∈ X) →
          ∀ (X : set α), X ∈ P.C → a ∈ X → c ∈ X,
-      intros a b c h h' Z hZ haZ,
-      apply h' Z hZ,
-      apply h Z hZ,
-      exact haZ,
+      sorry,
     }
   end⟩,
   -- If you start with the equivalence relation, and then make the partition
@@ -309,18 +264,7 @@ example (α : Type) : {R : α → α → Prop // equivalence R} ≃ partition α
     ext a b,
     -- so you have to prove an if and only if.
     show (∀ (c : α), a ∈ cl R c → b ∈ cl R c) ↔ R a b,
-    split, 
-    intro h,
-    replace h := h a (mem_cl_self hR a),
-    rw [mem_cl_iff] at h,
-    replace h := hR.right.left h,
-    assumption,
-    intros hab c hac,
-    rw [mem_cl_iff] at *,
-    replace hab := hR.right.left hab,
-    apply hR.right.right,
-    assumption,
-    assumption,
+    sorry,
   end,
   -- Similarly, if you start with the partition, and then make the
   -- equivalence relation, and then construct the corresponding partition 
@@ -333,5 +277,22 @@ example (α : Type) : {R : α → α → Prop // equivalence R} ≃ partition α
     ext X,
     show (∃ (a : α), X = cl _ a) ↔ X ∈ P.C,
     dsimp only,
-    sorry,
+    split,
+    {intro h,
+    obtain ⟨ a, h'  ⟩:= h,
+    rw h',
+    clear h',
+    clear X,
+    obtain ⟨ Y, hY, haY⟩:= P.Hcover a,
+    have hclaY : cl (λ (a b : α), ∀ (X : set α), X ∈ P.C → a ∈ X → b ∈ X) a = Y,
+    ext b,
+    split,
+    {intro h,
+    obtain ⟨ Z, hZ, hbZ⟩ := P.Hcover b,
+    replace h := h Z hZ hbZ,
+    rwa [P.Hdisjoint Y hY Z hZ ⟨ a, ⟨ haY, h ⟩  ⟩ ]},
+    {intros h Z hZ hbZ,
+    rwa [P.Hdisjoint Z hZ Y hY ⟨ b, ⟨ hbZ, h⟩  ⟩ ],},
+    rwa hclaY},
+    {sorry},
   end }

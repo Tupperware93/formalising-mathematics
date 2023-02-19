@@ -240,7 +240,7 @@ begin
     -- hypotheses with the `have` tactic:
     have : l < m ∨ l = m ∨ m < l := lt_trichotomy l m,
     -- Now the result follows from pure logic.
-    tauto },
+    tauto},
   -- Now let's define ε to be m - l.
   set ε := m - l with hε,
   -- Mathematically, the plan is to now find big natural numbers `L` and `M`
@@ -471,7 +471,13 @@ looking at what happens when we change a sequence or limit by adding a constant.
 lemma is_limit_add_const {a : ℕ → ℝ} {l : ℝ} (c : ℝ) (ha : is_limit a l) :
   is_limit (λ i, a i + c) (l + c) :=
 begin
-  sorry
+  intros ε hε,
+  obtain ⟨N,hN⟩ := ha ε hε,
+  use N,
+  intros n a,
+  dsimp,
+  ring_nf,
+  exact hN n a,
 end
 
 lemma is_limit_add_const_iff {a : ℕ → ℝ} {l : ℝ} (c : ℝ) :
