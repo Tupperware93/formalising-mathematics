@@ -1,0 +1,14 @@
+{
+"editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "name": "Tactic",
+        "scope": "keyword.control.tactic.lean, keyword.control.rw.lean, keyword.control.use.lean, keyword.control.split.lean, keyword.control.have.lean, keyword.control.obtain.lean",
+        "settings": {
+          "foreground": "#ff0000"
+        }
+      }
+    ]
+  }
+  
+}
