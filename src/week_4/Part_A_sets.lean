@@ -8,6 +8,8 @@ import data.set.lattice -- infinite unions and intersections
 
 ## Introduction
 
+API  = Application Programming Interface
+
 In contrast to group theory, where we made our own definition
 of a group and developed our own API (i.e. the lemmas we need
 to prove basic results in group theory), here we will use Lean's API.
@@ -198,7 +200,18 @@ end
 
 lemma image_comp (S : set X) : (g ∘ f) '' S = g '' (f '' S) :=
 begin
-  sorry
+  ext z,
+  split,
+  {rintros ⟨ x, hxS, hxz ⟩,
+  dsimp at hxz,
+  use f x,
+  split,
+  exact ⟨ x,hxS,rfl⟩,
+  assumption,},
+  {rintros ⟨ y, ⟨ x, hx, hx'⟩, hy'⟩,
+   refine ⟨ x,hx, _ ⟩,
+   rw[ ← hy', ← hx'],
+   }
 end
 
 open function
@@ -206,8 +219,23 @@ open function
 -- don't forget you can use `dsimp` to tidy up evaluated lambdas
 lemma image_injective : injective f → injective (λ S, f '' S) :=
 begin
-  sorry
+  rintros h S S' h',
+  dsimp at h',
+  ext x,
+  split,
+  {intro hxS,
+  have g: f x ∈ f '' S',
+  { rw ← h', 
+    exact ⟨ x, hxS, rfl⟩, }, 
+  -- rw ← h' at g,
+  dsimp at g,
+  obtain ⟨y, hy⟩ := g,
+  cases hy,
+  rw h at hy_right,
+  },
 end
+#check injective
+
 
 /-!
 
