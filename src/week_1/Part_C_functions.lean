@@ -106,11 +106,11 @@ end
 lemma surjective_comp (hf : surjective f) (hg : surjective g) : surjective (g ∘ f) :=
 begin
   intro c,
-  obtain ⟨b,h⟩ := hg c,
-  obtain ⟨a,h'⟩ := hf b,
+  obtain ⟨ b,h ⟩ := hg c,
+  obtain ⟨ a,h' ⟩ := hf b,
   use a, 
   dsimp,
-  rwa [h'],
+  rwa [ h'],
 end
 
 /-!

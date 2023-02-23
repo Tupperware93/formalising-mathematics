@@ -5,7 +5,6 @@ variables (X Y : Type) [topological_space X] [topological_space Y] (f : X → Y)
 open filter set
 
 open_locale filter -- for 𝓟
-open_locale topological_space -- for 𝓝 
 
 /-
 
