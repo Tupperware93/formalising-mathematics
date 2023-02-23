@@ -53,7 +53,7 @@ lemma compact_iff_finite_subcover'
   is_compact S ↔ (∀ {ι : Type} (U : ι → (set α)), (∀ i, is_open (U i)) →
     S ⊆ (⋃ i, U i) → (∃ (t : set ι), t.finite ∧ S ⊆ (⋃ i ∈ t, U i))) :=
 begin
-  rw compact_iff_finite_subcover,
+  rw is_compact_iff_finite_subcover,
   split,
   { intros hs ι U hU hsU,
     cases hs U hU hsU with F hF,
