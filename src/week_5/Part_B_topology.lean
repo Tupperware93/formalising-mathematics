@@ -36,13 +36,23 @@ open set
 example (a : α): filter α :=
 { sets := {X : set α | a ∈ interior X},
   univ_sets := begin
-    sorry,
+    use univ,
+    simp,
   end,
   sets_of_superset := begin
-    sorry,
+    rintros x y ⟨X', ⟨hX1, hX2⟩ , haX⟩ hxy,
+    use X',
+    use ⟨hX1, subset.trans hX2 hxy⟩,
+    exact haX,
   end,
   inter_sets := begin
-    sorry,
+    rintros x y ⟨X', ⟨hX1, hX2⟩ , haX⟩ ⟨Y, ⟨hY1, hY2⟩ , haY⟩,
+    use X' ∩  Y,
+    use is_open_inter hX1 hY1,
+    intros a ha,
+    cases ha with haX haY,
+    exact ⟨hX2 haX, hY2 haY⟩,
+    exact ⟨haX, haY⟩,    
   end }
 
 /-
@@ -81,7 +91,12 @@ involving `⊓`.
 example {x : α} {F G : filter α} (hxF : cluster_pt x F) (hFG : F ≤ G) :
   cluster_pt x G :=
 begin
-  sorry,
+  rw cluster_pt_iff at *,
+  intros X hX V hV,
+  apply hxF hX,
+  rw le_def at *,
+  apply hFG,
+  apply hV,
 end
 
 /-
@@ -137,7 +152,37 @@ begin
   -- Let's tell the type class inference system about `hnf : f.ne_bot`
   haveI := hnF,
   -- see if you can take it from here.
-  sorry,
+  have h1 : ∃ a ∈ S, cluster_pt a F :=
+  begin
+    have H : 𝓟 (S ∩ C) ≤ 𝓟 (S) := 
+    begin
+      refine principal_mono.mpr _,
+      simp,
+    end,
+    specialize hS (le_trans hFSC H),
+    assumption,
+  end,
+
+  obtain ⟨h, h', h''⟩ := h1,
+  use h,
+  use h',
+
+  have H' : cluster_pt h (𝓟 (S ∩ C)) :=
+  begin
+    refine cluster_pt.mono _ _,
+    exact F,
+    exact h'',
+    exact hFSC,
+  end,  
+
+  rw ←mem_closure_iff_cluster_pt at *,
+  have H'' : closure (S ∩ C) ⊆ closure C :=
+  begin
+    refine closure_mono _,
+    simp,
+  end,
+  rw (is_closed.closure_eq hC) at *,
+  exact H'' H',
 end
 
 
