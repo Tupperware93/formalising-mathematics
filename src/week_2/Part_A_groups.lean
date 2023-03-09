@@ -90,12 +90,12 @@ to introduce the `calc` tactic.
 lemma mul_left_cancel (a b c : G) (Habac : a * b = a * c) : b = c := 
 begin
  calc b = 1 * b         : by rw one_mul
-    ... = (a⁻¹ * a) * b : by sorry -- replace `sorry` with `rw X` as appropriate
-    ... = a⁻¹ * (a * b) : by sorry
-    ... = a⁻¹ * (a * c) : by sorry
-    ... = (a⁻¹ * a) * c : by sorry
-    ... = 1 * c         : by sorry
-    ... = c             : by sorry
+    ... = (a⁻¹ * a) * b : by rw mul_left_inv
+    ... = a⁻¹ * (a * b) : by rw mul_assoc
+    ... = a⁻¹ * (a * c) : by rw Habac
+    ... = (a⁻¹ * a) * c : by rw mul_assoc
+    ... = 1 * c         : by rw mul_left_inv
+    ... = c             : by rw one_mul
 end
 
 /-
@@ -112,7 +112,10 @@ called `a`, but you had better give it `a⁻¹` instead.
 lemma mul_eq_of_eq_inv_mul {a x y : G} (h : x = a⁻¹ * y) : a * x = y :=
 begin
   apply mul_left_cancel a⁻¹, 
-  sorry
+  calc a⁻¹ * (a * x) = (a⁻¹ * a) * x  : by rw mul_assoc
+    ... = (a⁻¹ * a) * (a⁻¹ * y)       : by rw h
+    ... = 1 * (a⁻¹  * y)              : by rw mul_left_inv
+    ... = a⁻¹ * y                     : by rw one_mul
 end
 
 -- It's a bore to keep introducing variable names.
@@ -128,12 +131,14 @@ in the theorems below.
 
 @[simp] theorem mul_one : a * 1 = a :=
 begin
-  sorry
+  apply mul_eq_of_eq_inv_mul,
+  rw mul_left_inv,
 end
 
 @[simp] theorem mul_right_inv : a * a⁻¹ = 1 :=
 begin
-  sorry
+  apply mul_eq_of_eq_inv_mul,
+  rw mul_one,
 end
 
 -- Now let's talk about what that `@[simp]` means.
@@ -219,22 +224,28 @@ end
 
 @[simp] lemma mul_inv_cancel_left : a * (a⁻¹ * b) = b :=
 begin
-  sorry
+  rw ← mul_assoc,
+  simp,
 end
 
 @[simp] lemma inv_mul : (a * b)⁻¹ = b⁻¹ * a⁻¹ :=
 begin
-  sorry
+  apply mul_left_cancel (a * b),
+  rw mul_right_inv,
+  simp,
 end
 
 @[simp] lemma one_inv : (1 : G)⁻¹ = 1 :=
 begin
-  sorry
+  apply mul_left_cancel (1 : G),
+  rw mul_right_inv (1 : G),
+  simp,   
 end
 
 @[simp] lemma inv_inv : a ⁻¹ ⁻¹ = a :=
 begin
-  sorry
+  apply mul_left_cancel a⁻¹,
+  simp,
 end
 
 /-
@@ -278,22 +289,31 @@ is one.
 
 lemma eq_mul_inv_of_mul_eq {a b c : G} (h : a * c = b) : a = b * c⁻¹ :=
 begin
-  sorry
+  rw ←h,
+  simp,
 end
 
 lemma eq_inv_mul_of_mul_eq {a b c : G} (h : b * a = c) : a = b⁻¹ * c :=
 begin
-  sorry
+  rw ← h,
+  simp,
 end
 
 lemma mul_left_eq_self {a b : G} : a * b = b ↔ a = 1 :=
 begin
-  sorry
+  split,
+  {intro h,
+  replace h := eq_mul_inv_of_mul_eq h,
+  simp at h, 
+  assumption, },
+  {intro h, 
+  rw h,
+  simp,}
 end
 
 lemma mul_right_eq_self {a b : G} : a * b = a ↔ b = 1 :=
 begin
-  sorry
+  
 end
 
 lemma eq_inv_of_mul_eq_one {a b : G} (h : a * b = 1) : a = b⁻¹ :=

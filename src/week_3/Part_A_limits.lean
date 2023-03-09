@@ -319,14 +319,14 @@ find your way around the `max` API is to *guess* what the names
 of the theorems are! For example what do you think 
 `max A B < C ↔ A < C ∧ B < C` is called?
 If you can't work it out, then cheat by running
+-/
 
-```
 example (A B C : ℝ) : max A B < C ↔ A < C ∧ B < C :=
 begin
   library_search
 end
-```
 
+/-
 2) `specialize` is a tactic which changes a function by fixing once and
 for all the first inputs. For example, say `f : A → B → C → D` is a function.
 Because `→` is right associative in Lean, `f` is a function which wants
@@ -471,19 +471,42 @@ looking at what happens when we change a sequence or limit by adding a constant.
 lemma is_limit_add_const {a : ℕ → ℝ} {l : ℝ} (c : ℝ) (ha : is_limit a l) :
   is_limit (λ i, a i + c) (l + c) :=
 begin
-  sorry
+  intros ε ε0,
+  cases ha ε (by linarith) with N hN,
+  use N,
+  intros n hn,
+  specialize hN n,
+  dsimp only,
+  specialize hN hn,
+  simp,
+  assumption,
 end
 
 lemma is_limit_add_const_iff {a : ℕ → ℝ} {l : ℝ} (c : ℝ) :
   is_limit a l ↔ is_limit (λ i, a i + c) (l + c) :=
 begin
-  sorry,
+  split,
+  {apply is_limit_add_const,
+  },
+  {intros h,
+  intros ε ε0,
+  cases h ε (by linarith) with N hN,
+  use N,
+  dsimp only at *,
+  intros n hnN,
+  specialize hN n hnN,
+  simp at hN,
+  assumption,
+  }
 end
 
 lemma is_limit_iff_is_limit_sub_eq_zero (a : ℕ → ℝ) (l : ℝ) :
   is_limit a l ↔ is_limit (λ i, a i - l) 0 :=
 begin
-  sorry,
+  convert is_limit_add_const_iff (-l),
+  ext b,
+  ring,
+  ring,
 end
 
 /-
@@ -505,7 +528,29 @@ theorem is_limit_add {a b : ℕ → ℝ} {l m : ℝ}
   (h1 : is_limit a l) (h2 : is_limit b m) :
   is_limit (a + b) (l + m) :=
 begin
-  sorry,
+  intros ε ε0,
+
+  cases h1 (ε/2) (by linarith) with N hN,
+  cases h2 (ε/2) (by linarith) with M hM,
+
+  set L := max N M,
+  have hNL : N ≤ L := le_max_left N M,
+  have hML : M ≤ L := le_max_right N M,
+
+  use L,
+
+  intros n hnL,
+  specialize hN n (le_trans hNL hnL),
+  specialize hM n (le_trans hML hnL),
+  simp,
+  
+  have h' : |a n - l| + |b n - m| < ε := by linarith,
+  have h'' : |(a n - l) + (b n - m)| ≤ |a n - l| + |b n - m| :=  (abs_add (a n - l) (b n - m)), 
+  have h''' : |(a n - l) + (b n - m)| < ε := by linarith,
+  have h'''': |(a n - l) + (b n - m)| = |a n + b n - (l + m)| := by ring,
+  rw ← h'''',
+  assumption,
+  
 end
 
 -- We have proved `is_limit` behaves well under `+`. If we also

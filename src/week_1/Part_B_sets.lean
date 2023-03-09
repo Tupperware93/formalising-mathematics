@@ -18,12 +18,13 @@ Let's think about `X ⊆ Y`. Typeset `⊆` with `\sub` or `\ss`
 lemma subset_def : X ⊆ Y ↔ ∀ a, a ∈ X → a ∈ Y :=
 begin
   -- true by definition
-  refl
+  refl,
 end
 
 lemma subset_refl : X ⊆ X :=
 begin
-  sorry,
+  intros set a,
+  assumption,
 end
 
 lemma subset_trans (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) : X ⊆ Z :=
@@ -36,7 +37,11 @@ begin
   -- You can also think of it as an implication:
   -- "if a is in Ω, and if a ∈ Y, then a ∈ Z". Because it's an implication,
   -- you can `apply hYZ`. This is a really useful skill!
-  sorry
+  rw subset_def at *,
+  intros set a,
+  apply hYZ,
+  apply hXY,
+  assumption,
 end
 
 /-!
@@ -49,7 +54,7 @@ The name of this theorem is `set.ext_iff`.
 
 example : X = Y ↔ (∀ a, a ∈ X ↔ a ∈ Y) :=
 begin
-  exact set.ext_iff
+  exact set.ext_iff,
 end
 
 -- In practice, you often have a goal `⊢ X = Y` and you want to reduce
@@ -60,7 +65,10 @@ end
 lemma subset.antisymm (hXY : X ⊆ Y) (hYX : Y ⊆ X) : X = Y :=
 begin
   -- start with `ext a`,
-  sorry
+  ext a,
+  split,
+  apply hXY,
+  apply hYX,
 end
 
 /-!
@@ -91,34 +99,78 @@ end
 
 lemma union_self : X ∪ X = X :=
 begin
-  sorry
+  ext a,
+  split,
+  intro hXuX,
+  rw union_def at *,
+  cases hXuX with hX hX',
+  apply hX,
+  apply hX',
+  intro hX,
+  rw union_def,
+  left,
+  exact hX,
 end
 
 lemma subset_union_left : X ⊆ X ∪ Y :=
 begin
-  sorry
+  rw subset_def,
+  intros a hX,
+  rw union_def,
+  left, exact hX,
 end
 
 lemma subset_union_right : Y ⊆ X ∪ Y :=
 begin
-  sorry
+  rw subset_def,
+  intro a,
+  rw union_def,
+  intro haY,
+  right,
+  assumption,
 end
 
 lemma union_subset_iff : X ∪ Y ⊆ Z ↔ X ⊆ Z ∧ Y ⊆ Z :=
 begin
-  sorry
+  split,
+  intros ahXuYsZ,
+  rw subset_def at *,
+  split,
+    intros a haX,
+    apply ahXuYsZ,
+    left,
+    assumption,
+  
+    intros a haY,
+    apply ahXuYsZ,
+    right,
+    assumption,
+
+  rintros ⟨hXsZ, hYsZ⟩,
+  intros a hXuY,
+  cases hXuY with hX hY,
+  exact hXsZ hX,
+  exact hYsZ hY,
 end
 
 variable (W : set Ω)
 
 lemma union_subset_union (hWX : W ⊆ X) (hYZ : Y ⊆ Z) : W ∪ Y ⊆ X ∪ Z :=
 begin
-  sorry
+  rw subset_def at *,
+  intros a aWuY,
+  cases aWuY with aW aY,
+  left,
+  exact hWX a aW,
+  right,
+  exact hYZ a aY,
 end
 
 lemma union_subset_union_left (hXY : X ⊆ Y) : X ∪ Z ⊆ Y ∪ Z :=
 begin
-  sorry
+  apply union_subset_union,
+  assumption,
+  refl,
 end
 
 -- etc etc
@@ -127,24 +179,36 @@ end
 
 lemma inter_subset_left : X ∩ Y ⊆ X :=
 begin
-  sorry
+  rw subset_def,
+  intros a aXiY,
+  exact aXiY.1,
 end
 
 -- don't forget `ext` to make progress with equalities of sets
 
 lemma inter_self : X ∩ X = X :=
 begin
-  sorry
+  ext a,
+  split,
+  intro aXiX,
+  exact aXiX.1,
+  intro aX,
+  exact ⟨aX, aX⟩,
 end
 
 lemma inter_comm : X ∩ Y = Y ∩ X :=
 begin
-  sorry
+  ext a,
+  rw inter_def,
+  rw inter_def,
+  apply and.comm,
 end
 
 lemma inter_assoc : X ∩ (Y ∩ Z) = (X ∩ Y) ∩ Z :=
 begin
-  sorry
+  ext a,
+  repeat {rw inter_def at *},
+  rw and.assoc,
 end
 
 /-!
@@ -155,12 +219,37 @@ end
 
 lemma not_exists_iff_forall_not : ¬ (∃ a, a ∈ X) ↔ ∀ b, ¬ (b ∈ X) :=
 begin
-  sorry,
+  split,
+  {intros h a, 
+  by_contra h1,
+  apply h,
+  use a,
+  assumption},
+
+  {intros a e,
+  obtain ⟨b, hb⟩ := e,
+  specialize a b,
+  apply a,
+  assumption}
 end
 
 example : ¬ (∀ a, a ∈ X) ↔ ∃ b, ¬ (b ∈ X) :=
 begin
-  sorry,
+  split,
+  {intros a,
+  by_contra nE,
+  apply a,
+  intro b,
+  by_contra nb,
+  apply nE,
+  use b,
+  },
+  {intro hnE,
+  obtain ⟨b, hb⟩ := hnE,
+  by_contra,
+  specialize h b,
+  apply hb,
+  assumption,}
 end
 
 end xena

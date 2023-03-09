@@ -45,12 +45,12 @@ variables (f : X → Y) (y : Y)
 
 example : (g y f) none = y := 
 begin
-  refl
+  refl,
 end
 
 example (x : X) : (g y f) (some x) = f x :=
 begin
-  refl
+  refl,
 end
 
 -- That's all you need to know about `option` really, but 
@@ -73,7 +73,9 @@ def option_func (f : X → Y) : option X → option Y :=
 -- `none` and `some x` cases.
 lemma option_id (ox : option X) : option_func (id : X → X) ox = ox :=
 begin
-  sorry
+  cases ox with x,
+  refl,
+  refl,
 end
 
 variable (Z : Type)
@@ -81,7 +83,9 @@ variable (Z : Type)
 lemma option_comp (f : X → Y) (g : Y → Z) (ox : option X) :
   option_func (g ∘ f) ox = (option_func g) (option_func f ox) :=
 begin
-  sorry
+  cases ox with x,
+  refl,
+  refl,
 end
 
 -- Now we define the structure of a monad, an `eta` and a `mu`.
@@ -96,7 +100,7 @@ def mu {X : Type} : option (option X) → option X :=
 
 lemma eta_nat (f : X → Y) (x : X) : option_func f (eta x) = eta (f x) :=
 begin
-  sorry
+  refl,
 end
 
 -- mu is a natural transformation
@@ -104,7 +108,9 @@ end
 lemma mu_nat (f : X → Y) (oox : option (option X)) :
   option_func f (mu oox) = mu (option_func (option_func f) oox) :=
 begin
-  sorry
+  cases oox with x,
+  refl,
+  refl,
 end
 
 -- coherence conditions (if I got them right!)
@@ -112,17 +118,23 @@ end
 lemma coherence1 (ooox : option (option (option X))) :
   mu ((option_func mu) ooox) = mu (mu ooox) :=
 begin
-  sorry
+  cases ooox,
+  refl,
+  refl,
 end
 
 lemma coherence2a (ox : option X) : mu (eta ox) = ox :=
 begin
-  sorry
+  cases ox,
+  refl,
+  refl,
 end
 
 lemma coherence2b (ox : option X) : mu (option_func eta ox) = ox :=
 begin
-  sorry
+  cases ox,
+  refl,
+  refl,
 end
 
 -- please feel free to check -- I don't know much about monads!

@@ -157,7 +157,47 @@ begin
   -- Note that `set T := ...` is about the *tactic* `set`.
 
   -- OK let's go.
-  sorry
+  intros I sets opensets cover,
+
+  have preOpen : ∀ (i : I), is_open (f ⁻¹'(sets i)) :=
+  begin
+    intros A,
+    apply continuous.is_open_preimage,
+    exact hf,
+    exact opensets A,
+  end,
+  have preCover: (f ⁻¹' T) ⊆ ⋃ (i : I), (f ⁻¹' sets i) :=
+  begin
+    rw subset_def,
+    intros hx hxf,
+    rw mem_preimage at hxf,
+    set hcover := cover hxf,
+    rw ← mem_preimage at *,
+    simp at *,
+    assumption,    
+  end,
+  rw hT_def at preCover,
+  have HS : S ⊆ f ⁻¹' (f '' S) :=
+  begin
+    rintros x' hx',
+    use [x', hx'],
+  end,
+    set UI := λ i : I, f ⁻¹' sets i with hUI,
+  
+  specialize hS UI preOpen (subset.trans HS preCover),
+  obtain ⟨t, ht, ht'⟩ := hS,
+
+  use [t, ht],
+
+  rintros r ⟨rt, rt', rt''⟩,
+  rw subset_def at ht',
+  specialize ht' rt rt',
+
+  rw mem_bUnion_iff at *,
+  rw hUI at ht',
+  dsimp at *,
+  rw ← rt'',
+  exact ht',
 end
 
 /-
@@ -185,6 +225,13 @@ injectivity.
 lemma closed_of_compact (S : set X) (hS : is_compact S)
   (C : set X) (hC : is_closed C) : is_compact (S ∩ C) :=
 begin
-  sorry,
+  rw compact_iff_finite_subcover at hS ⊢,
+
+  intros ι U hOpenCover hInterCover,
+
+  let V : option ι → set X := λ x, option.rec Cᶜ U x,
+
+  
+
 end
 
